@@ -1,6 +1,6 @@
 package com.sprint.mission.discodeit.entity;
 
-import lombok.Builder;
+import com.sprint.mission.discodeit.entity.base.BaseEntity;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -19,5 +19,17 @@ public class Message extends BaseEntity {
         this.content = content;
         this.channelId = channelId;
         this.userId = userId;
+    }
+
+    protected Message(Message other) {
+        super(other);
+        this.content = other.content;
+        this.userId = other.userId;
+        this.channelId = other.channelId;
+    }
+
+    @Override
+    public Message copy() {
+        return new Message(this);
     }
 }

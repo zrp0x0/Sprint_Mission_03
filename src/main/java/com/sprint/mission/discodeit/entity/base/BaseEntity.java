@@ -1,4 +1,4 @@
-package com.sprint.mission.discodeit.entity;
+package com.sprint.mission.discodeit.entity.base;
 
 import lombok.Getter;
 
@@ -17,7 +17,15 @@ public abstract class BaseEntity {
         this.updateAt = createAt;
     }
 
+    protected BaseEntity(BaseEntity other) {
+        this.id = other.id;
+        this.createAt = other.createAt;
+        this.updateAt = other.updateAt;
+    }
+
     protected void touch() {
         this.updateAt = System.currentTimeMillis();
     }
+
+    public abstract BaseEntity copy();
 }

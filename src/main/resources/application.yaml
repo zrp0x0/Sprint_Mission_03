@@ -1,3 +1,10 @@
 spring:
   application:
     name: Sprint_Mission_03
+
+app:
+  data:
+    user-path: ./data/users.dat
+    channel-path: ./data/channels.dat
+    message-path: ./data/messages.dat
+    userchannel-path: ./data/userchannels.dat

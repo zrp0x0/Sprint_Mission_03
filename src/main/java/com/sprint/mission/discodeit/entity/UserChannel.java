@@ -1,6 +1,6 @@
 package com.sprint.mission.discodeit.entity;
 
-import lombok.Builder;
+import com.sprint.mission.discodeit.entity.base.BaseEntity;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -19,5 +19,17 @@ public class UserChannel extends BaseEntity { // 유저의 등록일 또는 나�
         this.userId = userId;
         this.channelId = channelId;
         this.userChannelRole = userChannelRole;
+    }
+
+    protected UserChannel(UserChannel other) {
+        super(other);
+        this.userId = other.userId;
+        this.channelId = other.channelId;
+        this.userChannelRole = other.userChannelRole;
+    }
+
+    @Override
+    public UserChannel copy() {
+        return new UserChannel(this);
     }
 }
