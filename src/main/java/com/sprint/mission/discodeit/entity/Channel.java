@@ -35,4 +35,10 @@ public class Channel extends BaseEntity {
     public Channel copy() {
         return new Channel(this);
     }
+
+    public void updateInfo(String name, String description) {
+        this.name = name;
+        this.description = description;
+        touch();
+    }
 }

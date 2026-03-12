@@ -29,10 +29,8 @@ public class SignLoginTest {
                                         .password("test")
                                         .build();
 
-//        User user = userService.signUp(signUpRequestDTO);
-//        System.out.println(user);
-//        Thread.sleep(1000);
-        User signUser = userRepository.findByEmail("test@gmail.com")
+        User user = userService.signUp(signUpRequestDTO);
+        User signUser = userRepository.findByEmail(user.getEmail())
                         .orElseThrow(() -> new RuntimeException("error"));
 //
 //        Assertions.assertThat(user).isEqualTo(signUser);

@@ -81,6 +81,7 @@ public abstract class FileRepository<T extends BaseEntity> {
             T copyEntity = (T) entity.copy(); // 원본 객체 훼손 위험성이 존재함!!
             dataMap.put(copyEntity.getId(), copyEntity);
             saveToFile();
+            postSave(copyEntity);
             return copyEntity;
         } finally {
             writeLock.unlock();
@@ -116,8 +117,11 @@ public abstract class FileRepository<T extends BaseEntity> {
     public void deleteById(UUID id) {
         writeLock.lock();
         try {
-            dataMap.remove(id);
-            saveToFile();
+            T removed = dataMap.remove(id);
+            if (removed != null) {
+                saveToFile();
+                postDelete(removed);
+            }
         } finally {
             writeLock.unlock();
         }

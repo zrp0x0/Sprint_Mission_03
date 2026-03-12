@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Repository
 public class FileUserRepository extends FileRepository<User> implements UserRepository {
 
-    private Map<String, UUID> emailIndex = new ConcurrentHashMap<>();
+    private final Map<String, UUID> emailIndex = new ConcurrentHashMap<>();
 
     protected FileUserRepository(@Value("${app.data.user-path}") String filePath) {
         super(filePath);
