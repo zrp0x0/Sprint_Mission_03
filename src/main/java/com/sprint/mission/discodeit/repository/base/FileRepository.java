@@ -14,9 +14,9 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  */
 public abstract class FileRepository<T extends BaseEntity> {
 
-    private final ReentrantReadWriteLock rwLock = new ReentrantReadWriteLock();
-    private final Lock readLock = rwLock.readLock();
-    private final Lock writeLock = rwLock.writeLock();
+    protected final ReentrantReadWriteLock rwLock = new ReentrantReadWriteLock();
+    protected final Lock readLock = rwLock.readLock();
+    protected final Lock writeLock = rwLock.writeLock();
 
     protected final String filePath;
 
@@ -27,6 +27,11 @@ public abstract class FileRepository<T extends BaseEntity> {
         this.filePath = filePath;
         load(); // 생성 시 파일에서 읽어오기
     }
+
+    // Hook 메서드: 인덱스 저장 용도
+    protected void postLoad() {}
+    protected void postSave(T entity) {}
+    protected void postDelete(T entity) {}
 
     private void load() {
         File file = new File(filePath);
