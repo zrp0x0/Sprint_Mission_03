@@ -16,9 +16,9 @@ public class FileUserChannelRepository extends FileRepository<UserChannel> imple
         postLoad();
     }
 
-    private Map<UUID, List<UUID>> userToChannelsIndex = new HashMap<>();
-    private Map<UUID, List<UUID>> channelToUsersIndex = new HashMap<>();
-    private Map<String, UUID> exactMatchIndex = new HashMap<>();
+    private final Map<UUID, List<UUID>> userToChannelsIndex = new HashMap<>();
+    private final Map<UUID, List<UUID>> channelToUsersIndex = new HashMap<>();
+    private final Map<String, UUID> exactMatchIndex = new HashMap<>();
 
     @Override
     protected void postLoad() {

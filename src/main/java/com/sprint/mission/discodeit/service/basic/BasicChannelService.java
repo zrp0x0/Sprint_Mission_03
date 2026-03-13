@@ -45,11 +45,8 @@ public class BasicChannelService implements ChannelService {
         // 채널 존재 유무 확인
         Channel channel = getChannel(dto.channelId());
 
-        // 채널 수정 권환 확인
-        channel.verifyChannelUpdate(dto.requestUserId());
-
-        // 채널 수정
-        channel.updateInfo(dto.name(), dto.description());
+        // 채널 수정 권한 확인은 안에서
+        channel.updateInfo(dto.name(), dto.description(), dto.requestUserId());
 
         // 수정된 채널 업데이트
         return channelRepository.save(channel);

@@ -14,7 +14,7 @@ public class Message extends BaseEntity {
     private UUID channelId;
     private UUID userId;
 
-    public Message(String content, UUID channelId, UUID userId) {
+    private Message(String content, UUID channelId, UUID userId) {
         super();
         this.content = content;
         this.channelId = channelId;
@@ -31,5 +31,21 @@ public class Message extends BaseEntity {
     @Override
     public Message copy() {
         return new Message(this);
+    }
+
+    public static Message create(String content, UUID channelId, UUID userId) { // 입력 검증 로직 필요
+        return new Message(content, channelId, userId);
+    }
+
+    public void updateContent(String newContent, UUID requestUserId) { // 입력 검증 로직 필요
+        verifySender(requestUserId);
+        this.content = newContent;
+        touch();
+    }
+
+    public void verifySender(UUID requestUserId) {
+        if (!this.userId.equals(requestUserId)) {
+            throw new RuntimeException("메세지 작성자만 권한이 있습니다.");
+        }
     }
 }
