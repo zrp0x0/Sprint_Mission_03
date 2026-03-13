@@ -2,7 +2,6 @@ package com.sprint.mission.discodeit.service.basic;
 
 import com.sprint.mission.discodeit.dto.channel.*;
 import com.sprint.mission.discodeit.entity.Channel;
-import com.sprint.mission.discodeit.entity.ChannelType;
 import com.sprint.mission.discodeit.entity.UserChannel;
 import com.sprint.mission.discodeit.entity.UserChannelRole;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
@@ -24,25 +23,37 @@ public class BasicChannelService implements ChannelService {
 
     // 채널 생성
     @Override
-    public Channel createChannel(
-            CreateChannelRequestDTO dto
+    public Channel createPublicChannel(
+            CreatePublicChannelRequestDTO dto
     ) {
-        // 채널 생성 - 로그인 여부는 판단하지 않음(혹은 더 앞 단에서 확인)
         Channel newChannel = dto.toChannel();
 
-        // Private / Public 구분
-        if (newChannel.getType() == ChannelType.PRIVATE) {
-            // user 정보를 바탕으로 ReadStatus 정보 생성
-            List<UUID> list = newChannel.getUserList();
-
-        }
-
-        // 채널 저장
         Channel savedChannel = channelRepository.save(newChannel);
 
-        // 방장 - 채널 관계 매핑
         UserChannel masterMapping = UserChannel.create(dto.requestUserId(), savedChannel.getId(), UserChannelRole.MASTER);
         userChannelRepository.save(masterMapping);
+
+        return savedChannel;
+    }
+
+    @Override
+    public Channel createPrivateChannel(
+            CreatePrivateChannelRequestDTO dto
+    ) {
+        Channel newChannel = dto.toChannel();
+
+        Channel savedChannel = channelRepository.save(newChannel);
+
+        // 관계 매핑
+        Set<UUID> participants = new HashSet<>(dto.userList());
+        participants.add(dto.requestUserId());
+
+        for (UUID userId : participants) {
+            UserChannelRole role = userId.equals(dto.requestUserId()) ? UserChannelRole.MASTER : UserChannelRole.NORMAL
+            UserChannel mapping = UserChannel.create(userId, savedChannel.getId(), role);
+        }
+
+        // ReadStatus를 어떻게 해야할까?
 
         return savedChannel;
     }

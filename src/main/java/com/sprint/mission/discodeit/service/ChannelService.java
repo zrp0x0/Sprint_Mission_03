@@ -7,9 +7,15 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ChannelService {
-    // 채널 생성
-    Channel createChannel(
-            CreateChannelRequestDTO dto
+
+    // 채널 생성 - Public
+    Channel createPublicChannel(
+            CreatePublicChannelRequestDTO dto
+    );
+
+    // 채널 생성 - Private
+    Channel createPrivateChannel(
+            CreatePrivateChannelRequestDTO dto
     );
 
     // 채널 정보 수정
