@@ -9,41 +9,24 @@ import jakarta.validation.constraints.Size;
 import java.util.List;
 import java.util.UUID;
 
-public record CreateChannelRequestDTO(
+public record CreatePublicChannelRequestDTO(
         @NotNull(message = "요청 사용자 ID는 필수입니다.")
         UUID requestUserId,
-
-        @NotNull(message = "채널 타입(PUBLIC/PRIVATE)을 지정해주세요.")
-        ChannelType type,
 
         @NotBlank(message = "채널 이름은 필수입니다.")
         @Size(max = 50, message = "채널 이름은 50자를 초과할 수 없습니다.")
         String name,
 
         @Size(max = 255, message = "채널 설명은 255자를 초과할 수 없습니다.")
-        String description,
-
-        List<UUID> userList
+        String description
 ) {
     public Channel toChannel() {
         return Channel.create(
-                this.type, // public / private 구분
+                ChannelType.PUBLIC, // public / private 구분
                 this.name,
                 this.description,
                 this.requestUserId,
-                this.userList
+                null
         );
-        // 여기서 딱히 따로 만들 필요 없지 않나?
-        // - 왜냐하면 사용자 입력에서 애초에 null을 입력하게 할 건데, 굳이? ArrayList null 방어 로직은 내부 생성자에서 작성을 완료
     }
 }
-
-// 방 생성 로직
-/*
-> private
--   - user 정보를 받아 user별 readstatus 정보를 생성
-    - name 생략
-    - description 생략
-
-> public은 기존 로직 유지
-*/

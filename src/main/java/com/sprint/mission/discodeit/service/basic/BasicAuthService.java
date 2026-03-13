@@ -4,16 +4,15 @@ import com.sprint.mission.discodeit.dto.user.LoginRequestDTO;
 import com.sprint.mission.discodeit.dto.user.SignUpRequestDTO;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.UserRepository;
-import com.sprint.mission.discodeit.service.UserService;
+import com.sprint.mission.discodeit.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.html.Option;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class BasicUserService implements UserService {
+public class BasicAuthService implements AuthService {
 
     private final UserRepository userRepository;
 

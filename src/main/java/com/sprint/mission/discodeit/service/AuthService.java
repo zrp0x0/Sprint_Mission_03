@@ -4,7 +4,7 @@ import com.sprint.mission.discodeit.dto.user.LoginRequestDTO;
 import com.sprint.mission.discodeit.dto.user.SignUpRequestDTO;
 import com.sprint.mission.discodeit.entity.User;
 
-public interface UserService {
+public interface AuthService {
 
     User signUp(
             SignUpRequestDTO signUpRequestDTO
