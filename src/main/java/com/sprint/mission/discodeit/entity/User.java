@@ -12,7 +12,7 @@ public class User extends BaseEntity {
     private String email;
     private String password;
 
-    public User(String username, String email, String password) {
+    private User(String username, String email, String password) {
         super();
         this.username = username;
         this.email = email;
@@ -29,5 +29,17 @@ public class User extends BaseEntity {
     @Override
     public User copy() {
         return new User(this);
+    }
+
+    public static User create(String username, String email, String password) {
+        // 검증 로직 여기서
+        return new User(username, email, password);
+    }
+
+    //
+    public void authenticate(String rawPassword) {
+        if (!password.equals(rawPassword)) {
+            throw new RuntimeException("인증 정보가 일치하지 않습니다.");
+        }
     }
 }
