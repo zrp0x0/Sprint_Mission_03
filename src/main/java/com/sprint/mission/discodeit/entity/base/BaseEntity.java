@@ -2,28 +2,20 @@ package com.sprint.mission.discodeit.entity.base;
 
 import lombok.Getter;
 
-import java.io.Serializable;
 import java.time.Instant;
-import java.util.UUID;
 
 @Getter // equals and hash도 해야될 듯? - 공부하고 하자
-public abstract class BaseEntity implements Serializable {
+public abstract class BaseEntity extends ImmutableBaseEntity {
 
-    private static final long serialVersionUID = 1L;
-
-    protected UUID id;
-    protected Instant createAt;
     protected Instant updateAt;
 
     protected BaseEntity() {
-        this.id = UUID.randomUUID();
-        this.createAt = Instant.now(); // ms 단위
+        super();
         this.updateAt = createAt;
     }
 
     protected BaseEntity(BaseEntity other) {
-        this.id = other.id;
-        this.createAt = other.createAt;
+        super(other);
         this.updateAt = other.updateAt;
     }
 

@@ -4,6 +4,8 @@ import com.sprint.mission.discodeit.entity.base.BaseEntity;
 import lombok.Getter;
 import lombok.ToString;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -14,11 +16,15 @@ public class Message extends BaseEntity {
     private UUID channelId;
     private UUID userId;
 
-    private Message(String content, UUID channelId, UUID userId) {
+    // 추가
+    private List<UUID> attachmentIds; // 깊은 복사
+
+    private Message(String content, UUID channelId, UUID userId, List<UUID> attachmentIds) {
         super();
         this.content = content;
         this.channelId = channelId;
         this.userId = userId;
+        this.attachmentIds = new ArrayList<>(attachmentIds);
     }
 
     protected Message(Message other) {
@@ -26,6 +32,7 @@ public class Message extends BaseEntity {
         this.content = other.content;
         this.userId = other.userId;
         this.channelId = other.channelId;
+        this.attachmentIds = new ArrayList<>(other.attachmentIds);
     }
 
     @Override
@@ -33,8 +40,8 @@ public class Message extends BaseEntity {
         return new Message(this);
     }
 
-    public static Message create(String content, UUID channelId, UUID userId) { // 입력 검증 로직 필요
-        return new Message(content, channelId, userId);
+    public static Message create(String content, UUID channelId, UUID userId, List<UUID> attachmentIds) { // 입력 검증 로직 필요
+        return new Message(content, channelId, userId, attachmentIds);
     }
 
     public void updateContent(String newContent, UUID requestUserId) { // 입력 검증 로직 필요
