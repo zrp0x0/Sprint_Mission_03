@@ -8,3 +8,4 @@ app:
     channel-path: ./data/channels.dat
     message-path: ./data/messages.dat
     userchannel-path: ./data/userchannels.dat
+    readstatus-path: ./data/readstatus.dat

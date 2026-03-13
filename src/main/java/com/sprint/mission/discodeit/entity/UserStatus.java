@@ -15,13 +15,13 @@ public class UserStatus extends BaseEntity {
     private UUID userId;
     private Instant lastOnlineTime;
 
-    private UserStatus(UUID userId, Instant lastOnlineTime) {
+    protected UserStatus(UUID userId, Instant lastOnlineTime) {
         super();
         this.userId = userId;
         this.lastOnlineTime = lastOnlineTime;
     }
 
-    private UserStatus(UserStatus other) {
+    protected UserStatus(UserStatus other) {
         super(other);
         this.userId = other.userId;
         this.lastOnlineTime = other.lastOnlineTime;
@@ -31,8 +31,8 @@ public class UserStatus extends BaseEntity {
         return new UserStatus(this);
     }
 
-    public static UserStatus create(UUID userId, Instant lastOnlineTime) {
-        return new UserStatus(userId, lastOnlineTime);
+    public static UserStatus create(UUID userId) {
+        return new UserStatus(userId, Instant.now());
     }
 
     // 로직

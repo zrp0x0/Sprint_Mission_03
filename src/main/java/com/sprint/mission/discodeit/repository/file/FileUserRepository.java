@@ -15,6 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class FileUserRepository extends FileRepository<User> implements UserRepository {
 
     private final Map<String, UUID> emailIndex = new ConcurrentHashMap<>();
+    private final Map<String, UUID> usernameIndex = new ConcurrentHashMap<>();
 
     protected FileUserRepository(@Value("${app.data.user-path}") String filePath) {
         super(filePath);
@@ -25,17 +26,20 @@ public class FileUserRepository extends FileRepository<User> implements UserRepo
     protected void postLoad() {
         for (User user : dataMap.values()) {
             emailIndex.put(user.getEmail(), user.getId());
+            usernameIndex.put(user.getUsername(), user.getId());
         }
     }
 
     @Override
     protected void postSave(User entity) {
         emailIndex.put(entity.getEmail(), entity.getId());
+        usernameIndex.put(entity.getUsername(), entity.getId());
     }
 
     @Override
     protected void postDelete(User entity) {
         emailIndex.remove(entity.getEmail());
+        usernameIndex.remove(entity.getUsername());
     }
 
     @Override
@@ -43,6 +47,20 @@ public class FileUserRepository extends FileRepository<User> implements UserRepo
         readLock.lock();
         try {
             UUID targetId = emailIndex.get(email);
+            if (targetId == null) {
+                return Optional.empty();
+            }
+            return super.findById(targetId);
+        } finally {
+            readLock.unlock();
+        }
+    }
+
+    @Override
+    public Optional<User> findByUsername(String username) {
+        readLock.lock();
+        try {
+            UUID targetId = usernameIndex.get(username);
             if (targetId == null) {
                 return Optional.empty();
             }

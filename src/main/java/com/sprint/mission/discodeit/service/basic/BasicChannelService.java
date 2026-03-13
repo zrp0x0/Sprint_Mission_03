@@ -2,6 +2,7 @@ package com.sprint.mission.discodeit.service.basic;
 
 import com.sprint.mission.discodeit.dto.channel.*;
 import com.sprint.mission.discodeit.entity.Channel;
+import com.sprint.mission.discodeit.entity.ReadStatus;
 import com.sprint.mission.discodeit.entity.UserChannel;
 import com.sprint.mission.discodeit.entity.UserChannelRole;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
@@ -33,6 +34,9 @@ public class BasicChannelService implements ChannelService {
         UserChannel masterMapping = UserChannel.create(dto.requestUserId(), savedChannel.getId(), UserChannelRole.MASTER);
         userChannelRepository.save(masterMapping);
 
+        ReadStatus readStatus = ReadStatus.create(dto.requestUserId(), savedChannel.getId());
+        readStatusRepository.save(readStatus);
+
         return savedChannel;
     }
 
@@ -49,11 +53,12 @@ public class BasicChannelService implements ChannelService {
         participants.add(dto.requestUserId());
 
         for (UUID userId : participants) {
-            UserChannelRole role = userId.equals(dto.requestUserId()) ? UserChannelRole.MASTER : UserChannelRole.NORMAL
+            UserChannelRole role = userId.equals(dto.requestUserId()) ? UserChannelRole.MASTER : UserChannelRole.NORMAL;
             UserChannel mapping = UserChannel.create(userId, savedChannel.getId(), role);
-        }
 
-        // ReadStatus를 어떻게 해야할까?
+            ReadStatus readStatus = ReadStatus.create(userId, savedChannel.getId());
+            readStatusRepository.save(readStatus);
+        }
 
         return savedChannel;
     }
@@ -79,7 +84,7 @@ public class BasicChannelService implements ChannelService {
             JoinChannelRequestDTO dto
     ) {
         // 채널 유무 확인
-        getChannel(dto.channelId());
+        Channel channel = getChannel(dto.channelId());
 
         // 이미 가입된 상태인지 체크 - 좀만 더 고민
         Optional<UserChannel> result = userChannelRepository.findByUserIdAndChannelId(dto.requestUserId(), dto.channelId());
@@ -90,6 +95,10 @@ public class BasicChannelService implements ChannelService {
         // 유저 - 채널 관계 매핑
         UserChannel newMapping = UserChannel.create(dto.requestUserId(), dto.channelId(), UserChannelRole.NORMAL);
         userChannelRepository.save(newMapping);
+
+        // ReadStatus 매핑
+        ReadStatus readStatus = ReadStatus.create(dto.requestUserId(), channel.getId());
+        readStatusRepository.save(readStatus);
     }
 
     // 채널 탈퇴
@@ -108,6 +117,8 @@ public class BasicChannelService implements ChannelService {
         if (channel.isMaster(dto.requestUserId())) {
             throw new RuntimeException("방장은 채널을 나갈 수 없습니다. 채널을 삭제하거나 방장을 위임하세요.");
         }
+
+        // 자 이제 이걸 어떻게 처리해야할까? - ReadStatus 삭제!!
 
         userChannelRepository.deleteById(mapping.getId());
     }

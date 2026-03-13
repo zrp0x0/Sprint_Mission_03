@@ -1,7 +1,6 @@
 package com.sprint.mission.discodeit.service.basic;
 
-import com.sprint.mission.discodeit.dto.user.LoginRequestDTO;
-import com.sprint.mission.discodeit.dto.user.SignUpRequestDTO;
+import com.sprint.mission.discodeit.dto.auth.LoginRequestDTO;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.AuthService;
@@ -15,17 +14,6 @@ import java.util.Optional;
 public class BasicAuthService implements AuthService {
 
     private final UserRepository userRepository;
-
-    @Override
-    public User signUp(
-            SignUpRequestDTO dto
-    ) {
-        validateDuplicateEmail(dto.email());
-
-        User newUser = dto.toUser();
-
-        return userRepository.save(newUser);
-    }
 
     @Override
     public User login(
@@ -45,5 +33,4 @@ public class BasicAuthService implements AuthService {
             throw new RuntimeException("이메일 중복입니다.");
         }
     }
-
 }

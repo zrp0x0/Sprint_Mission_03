@@ -1,5 +1,6 @@
 package com.sprint.mission.discodeit.repository.base;
 
+import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.entity.base.BaseEntity;
 
 import java.io.*;

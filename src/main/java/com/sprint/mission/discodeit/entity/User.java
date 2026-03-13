@@ -49,4 +49,9 @@ public class User extends BaseEntity {
             throw new RuntimeException("인증 정보가 일치하지 않습니다.");
         }
     }
+
+    public void updateProfileId(UUID updateProfileId) {
+        this.profileId = updateProfileId;
+        touch();
+    }
 }
