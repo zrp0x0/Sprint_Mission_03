@@ -4,6 +4,6 @@ import java.util.UUID;
 
 public record DeleteChannelRequestDTO(
         UUID requestUserId,
-        UUID id
+        UUID channelId
 ) {
 }

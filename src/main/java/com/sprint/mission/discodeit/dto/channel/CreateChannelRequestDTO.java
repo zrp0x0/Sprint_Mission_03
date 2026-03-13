@@ -11,12 +11,4 @@ public record CreateChannelRequestDTO(
         String name,
         String description
 ) {
-    public Channel toChannel() {
-        return new Channel(
-                this.type,
-                this.name,
-                this.description,
-                this.requestUserId
-        );
-    }
 }

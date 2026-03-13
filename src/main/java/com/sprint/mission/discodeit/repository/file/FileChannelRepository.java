@@ -12,4 +12,9 @@ public class FileChannelRepository extends FileRepository<Channel> implements Ch
     protected FileChannelRepository(@Value("${app.data.channel-path}") String filePath) {
         super(filePath);
     }
+
+    @Override
+    protected void postLoad() {
+
+    }
 }

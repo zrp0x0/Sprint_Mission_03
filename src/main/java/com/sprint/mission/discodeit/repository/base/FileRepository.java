@@ -29,7 +29,7 @@ public abstract class FileRepository<T extends BaseEntity> {
     }
 
     // Hook 메서드: 인덱스 저장 용도
-    protected void postLoad() {}
+    protected abstract void postLoad();
     protected void postSave(T entity) {}
     protected void postDelete(T entity) {}
 

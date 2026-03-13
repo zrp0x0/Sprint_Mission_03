@@ -4,7 +4,7 @@ import java.util.UUID;
 
 public record UpdateChannelRequestDTO(
         UUID requestUserId,
-        UUID id,
+        UUID channelId,
         String name,
         String description
 ) {

@@ -12,4 +12,9 @@ public class FileMessageRepository extends FileRepository<Message> implements Me
     protected FileMessageRepository(@Value("${app.data.message-path}") String filePath) {
         super(filePath);
     }
+
+    @Override
+    protected void postLoad() {
+
+    }
 }

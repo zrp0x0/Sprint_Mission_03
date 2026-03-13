@@ -14,7 +14,7 @@ public class UserChannel extends BaseEntity { // 유저의 등록일 또는 나�
     private UUID channelId;
     private UserChannelRole userChannelRole;
 
-    public UserChannel(UUID userId, UUID channelId, UserChannelRole userChannelRole) {
+    private UserChannel(UUID userId, UUID channelId, UserChannelRole userChannelRole) {
         super();
         this.userId = userId;
         this.channelId = channelId;
@@ -26,6 +26,10 @@ public class UserChannel extends BaseEntity { // 유저의 등록일 또는 나�
         this.userId = other.userId;
         this.channelId = other.channelId;
         this.userChannelRole = other.userChannelRole;
+    }
+
+    public static UserChannel create(UUID userId, UUID channelId, UserChannelRole userChannelRole) {
+        return new UserChannel(userId, channelId, userChannelRole);
     }
 
     @Override
