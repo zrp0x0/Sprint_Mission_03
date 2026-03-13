@@ -19,12 +19,11 @@
     - 테스트
 
 # 추가 요구사항
-    - UserService 고도화   
-    - AuthService 고도화
+    O- UserService 고도화
+    O- AuthService 고도화
 
     - ChannelService 고도화
     - Message Service 고도화
-
     - ReadStatusService 구현
     - UserStatusService 고도화
     - BinaryContentService 구현

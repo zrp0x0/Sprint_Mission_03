@@ -2,6 +2,7 @@ package com.sprint.mission.discodeit.repository.base;
 
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.entity.base.BaseEntity;
+import com.sprint.mission.discodeit.entity.base.ImmutableBaseEntity;
 
 import java.io.*;
 import java.util.*;
@@ -13,7 +14,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 /*
 예외 처리 로직 아직 안함
  */
-public abstract class FileRepository<T extends BaseEntity> {
+public abstract class FileRepository<T extends ImmutableBaseEntity> {
 
     // 이 부분이 좀...? ReentrantReadWriteLock 공부
     // - 간략한건 writeLock이 뒤로 밀릴 정도로 요청이 많이와도 자바에서 관리해준다는 사실 정도

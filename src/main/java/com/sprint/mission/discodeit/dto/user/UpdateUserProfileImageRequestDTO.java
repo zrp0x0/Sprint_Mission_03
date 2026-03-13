@@ -2,9 +2,10 @@ package com.sprint.mission.discodeit.dto.user;
 
 import java.util.UUID;
 
-public record CreateUserProfileImageRequestDTO(
+public record UpdateUserProfileImageRequestDTO(
 
         UUID requestUserId,
         UUID profileId
 ) {
+
 }

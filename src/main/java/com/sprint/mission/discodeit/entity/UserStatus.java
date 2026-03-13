@@ -15,13 +15,13 @@ public class UserStatus extends BaseEntity {
     private UUID userId;
     private Instant lastOnlineTime;
 
-    protected UserStatus(UUID userId, Instant lastOnlineTime) {
+    private UserStatus(UUID userId, Instant lastOnlineTime) {
         super();
         this.userId = userId;
         this.lastOnlineTime = lastOnlineTime;
     }
 
-    protected UserStatus(UserStatus other) {
+    private UserStatus(UserStatus other) {
         super(other);
         this.userId = other.userId;
         this.lastOnlineTime = other.lastOnlineTime;

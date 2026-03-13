@@ -22,10 +22,18 @@ public record SignUpRequestDTO(
         @Size(min = 8, message = "비밀번호는 최소 8자 이상이어야 합니다.")
         String password,
 
-        String fileName,
-        String contentType,
-        byte[] data
+//        String fileName,
+//        String contentType,
+//        byte[] data
+
+        ProfileImageDTO profileImage
 ) {
+    public record ProfileImageDTO(
+            String fileName,
+            String contentType,
+            byte[] data
+    ) {}
+
     public User toUser(UUID profileId) {
         return User.create(
                 this.username,

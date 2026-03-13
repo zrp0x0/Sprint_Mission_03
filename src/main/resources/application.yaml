@@ -9,3 +9,5 @@ app:
     message-path: ./data/messages.dat
     userchannel-path: ./data/userchannels.dat
     readstatus-path: ./data/readstatus.dat
+    userstatus-path: ./data/userstatus.dat
+    binarycontent-path: ./data/binarycontent.dat

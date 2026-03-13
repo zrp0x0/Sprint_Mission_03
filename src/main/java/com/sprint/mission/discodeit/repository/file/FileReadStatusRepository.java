@@ -6,8 +6,13 @@ import com.sprint.mission.discodeit.repository.base.FileRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+
 @Repository
 public class FileReadStatusRepository extends FileRepository<ReadStatus> implements ReadStatusRepository {
+
+    private final Map<UUID, List<UUID>> userIdIndex = new ConcurrentHashMap<>();
 
     protected FileReadStatusRepository(@Value("${app.data.readstatus-path}")String filePath) {
         super(filePath);
@@ -16,7 +21,45 @@ public class FileReadStatusRepository extends FileRepository<ReadStatus> impleme
 
     @Override
     protected void postLoad() {
-
+        for (ReadStatus rs : dataMap.values()) {
+            addToIndex(rs);
+        }
     }
 
+    @Override
+    protected void postSave(ReadStatus entity) {
+        addToIndex(entity);
+    }
+
+    @Override
+    protected void postDelete(ReadStatus entity) {
+        removeFromIndex(userIdIndex, entity.getUserId(), entity.getId());
+    }
+
+    private void addToIndex(ReadStatus rs) {
+        userIdIndex.computeIfAbsent(rs.getUserId(), k -> new ArrayList<>()).add(rs.getId());
+    }
+
+    private void removeFromIndex(Map<UUID, List<UUID>> index, UUID key, UUID value) {
+        List<UUID> list = index.get(key);
+        if (list != null) {
+            list.remove(value);
+            if (list.isEmpty())
+                index.remove(key);
+        }
+    }
+
+    @Override
+    public List<ReadStatus> findByUserId(UUID userId) {
+        readLock.lock();
+        try {
+            List<UUID> list = userIdIndex.getOrDefault(userId, Collections.emptyList());
+            return list.stream()
+                    .map(super::findById)
+                    .flatMap(Optional::stream)
+                    .toList();
+        } finally {
+            readLock.unlock();
+        }
+    }
 }
