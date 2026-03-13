@@ -23,7 +23,7 @@ public class BasicUserService implements UserService {
     ) {
         validateDuplicateEmail(dto.email());
 
-        User newUser = User.create(dto.username(), dto.email(), dto.password());
+        User newUser = dto.toUser();
 
         return userRepository.save(newUser);
     }

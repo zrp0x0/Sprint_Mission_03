@@ -29,7 +29,7 @@ public class BasicMessageService implements MessageService {
         userJoinThisChannel(dto.userId(), dto.channelId());
 
         // 실행 로직
-        Message newMessage = Message.create(dto.content(), dto.channelId(), dto.userId());
+        Message newMessage = dto.toMessage();
         return messageRepository.save(newMessage);
     }
 

@@ -14,13 +14,15 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  */
 public abstract class FileRepository<T extends BaseEntity> {
 
+    // 이 부분이 좀...? ReentrantReadWriteLock 공부
+    // - 간략한건 writeLock이 뒤로 밀릴 정도로 요청이 많이와도 자바에서 관리해준다는 사실 정도
     protected final ReentrantReadWriteLock rwLock = new ReentrantReadWriteLock();
     protected final Lock readLock = rwLock.readLock();
     protected final Lock writeLock = rwLock.writeLock();
 
     protected final String filePath;
 
-    protected Map<UUID, T> dataMap = new ConcurrentHashMap<>();
+    protected final Map<UUID, T> dataMap = new ConcurrentHashMap<>();
     // Q: 락을 걸어주면 HashMap을 사용해도 Thread-Safe 한 것 아닌가?
 
     protected FileRepository(String filePath) {
@@ -48,7 +50,8 @@ public abstract class FileRepository<T extends BaseEntity> {
         ) {
             Object object = ois.readObject();
             if (object instanceof Map) {
-                this.dataMap = new ConcurrentHashMap<>((Map<UUID, T>)object);
+                this.dataMap.clear();
+                this.dataMap.putAll((Map<UUID, T>)object);
             }
         } catch (Exception e) {
 
@@ -101,7 +104,7 @@ public abstract class FileRepository<T extends BaseEntity> {
 
     @SuppressWarnings("unchecked")
     public List<T> findAll() {
-        readLock.lock();
+        readLock.lock(); // 근데 읽기 작업인데
         try {
             List<T> list = new ArrayList<>();
             for (T entity : dataMap.values()) {

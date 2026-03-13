@@ -25,7 +25,7 @@ public class BasicChannelService implements ChannelService {
             CreateChannelRequestDTO dto
     ) {
         // 채널 생성 - 로그인 여부는 판단하지 않음(혹은 더 앞 단에서 확인)
-        Channel newChannel = Channel.create(dto.type(), dto.name(), dto.description(), dto.requestUserId());
+        Channel newChannel = dto.toChannel();
 
         // 채널 저장
         Channel savedChannel = channelRepository.save(newChannel);
@@ -132,7 +132,6 @@ public class BasicChannelService implements ChannelService {
 
         return myChannelList;
     }
-
 
     private Channel getChannel(UUID channelId) {
         Channel channel = channelRepository.findById(channelId)

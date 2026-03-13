@@ -8,7 +8,7 @@ import java.util.UUID;
 @Getter // equals and hash도 해야될 듯? - 공부하고 하자
 public abstract class BaseEntity implements Serializable {
 
-    private static final long seraiVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
     protected UUID id;
     protected Long createAt;
