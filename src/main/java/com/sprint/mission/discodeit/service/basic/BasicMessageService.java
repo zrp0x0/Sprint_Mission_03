@@ -5,12 +5,14 @@ import com.sprint.mission.discodeit.dto.message.SendMessageRequestDTO;
 import com.sprint.mission.discodeit.dto.message.UpdateMessageRequestDTO;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.entity.UserChannel;
+import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import com.sprint.mission.discodeit.repository.MessageRepository;
 import com.sprint.mission.discodeit.repository.UserChannelRepository;
 import com.sprint.mission.discodeit.service.MessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,7 +22,10 @@ public class BasicMessageService implements MessageService {
 
     private final MessageRepository messageRepository;
     private final UserChannelRepository userChannelRepository;
+    private final BinaryContentRepository binaryContentRepository;
 
+    // create
+    @Override
     public Message sendMessage(
             SendMessageRequestDTO dto
     ) {
@@ -28,11 +33,27 @@ public class BasicMessageService implements MessageService {
         // - 이 유저가 이 채널에 가입되어있는가?
         userJoinThisChannel(dto.userId(), dto.channelId());
 
+        // 검증 로직 추가
+        // - 해당 파일이 정말 실제 서버에 존재하는지 확인해야함
+        // - 그리고 현재 profileId만 받도록 설계되어있는데 이유는 BinaryContentService에서 Id를 만들고 해당 id를 반환하도록 설계할 예정
+        if (dto.attachmentIds() != null && !dto.attachmentIds().isEmpty()) {
+            for (UUID fileId : dto.attachmentIds()) {
+                binaryContentRepository.findById(fileId)
+                        .orElseThrow(() -> new RuntimeException("존재하지 않는 파일 입니다."));
+            }
+        }
+
+        // 여기서 지금 사실 dto -> message를 변환하기 위해서 null 체크를 내부에서 하고 있는데
+        // 로직적으로 emptyList를 만들어줘서 반환하는게 더 좋은 선택일까?
+        // - dto는 null로 받는 것이 더 좋은 것 같은데
+        // - dto로 생성이 아니라 내부 메소드 자체로 생성하도록 (Message.create())를 사용하는 패턴이 더 나으려나? 질문
+
         // 실행 로직
         Message newMessage = dto.toMessage();
         return messageRepository.save(newMessage);
     }
 
+    @Override
     public Message updateMessage(
             UpdateMessageRequestDTO dto
     ) {
@@ -40,10 +61,26 @@ public class BasicMessageService implements MessageService {
         // - 메세지 존재 여부
         Message message = getMessage(dto.messageId());
 
+        message.verifySender(dto.requestUserId()); // 근데 이걸 여기서 하면 서버 리소스 소모를 안한다는 장점이 있는건 알겠는데, DDD 측면?
+
+        List<UUID> newAttachmentIds = dto.attachmentIds() == null ? new ArrayList<>() : new ArrayList<>(dto.attachmentIds());
+        for (UUID fileId : newAttachmentIds) {
+            binaryContentRepository.findById(fileId)
+                    .orElseThrow(() -> new RuntimeException("존재하지 않는 파일 입니다."));
+        }
+
+        // 이전에 있던 첨부 파일 삭제
+        for (UUID oldFileId : message.getAttachmentIds()) {
+            if (!newAttachmentIds.contains(oldFileId)) {
+                binaryContentRepository.deleteById(oldFileId);
+            }
+        }
+
         // 실행 로직
-        message.updateContent(dto.content(), dto.requestUserId());
+        message.updateContent(dto.content(), dto.requestUserId(), dto.attachmentIds());
         return messageRepository.save(message);
     }
+
 
     public void deleteMessage(
             DeleteMessageRequestDTO dto
@@ -53,10 +90,15 @@ public class BasicMessageService implements MessageService {
         Message message = getMessage(dto.messageId());
         message.verifySender(dto.requestUserId());
 
+        for (UUID fileId : message.getAttachmentIds()) {
+            binaryContentRepository.deleteById(fileId);
+        }
+
         // 실행 로직
         messageRepository.deleteById(message.getId());
     }
 
+    @Override
     public List<Message> getMessagesByChannel(UUID requestUserId, UUID channelId) {
         // 검증 로직
         userJoinThisChannel(requestUserId, channelId);

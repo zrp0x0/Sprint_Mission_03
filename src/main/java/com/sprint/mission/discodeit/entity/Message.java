@@ -24,7 +24,7 @@ public class Message extends BaseEntity {
         this.content = content;
         this.channelId = channelId;
         this.userId = userId;
-        this.attachmentIds = new ArrayList<>(attachmentIds);
+        this.attachmentIds = attachmentIds == null ? new ArrayList<>() : new ArrayList<>(attachmentIds);
     }
 
     protected Message(Message other) {
@@ -32,7 +32,7 @@ public class Message extends BaseEntity {
         this.content = other.content;
         this.userId = other.userId;
         this.channelId = other.channelId;
-        this.attachmentIds = new ArrayList<>(other.attachmentIds);
+        this.attachmentIds = other.attachmentIds == null ? new ArrayList<>() :  new ArrayList<>(other.attachmentIds);
     }
 
     @Override
@@ -44,9 +44,10 @@ public class Message extends BaseEntity {
         return new Message(content, channelId, userId, attachmentIds);
     }
 
-    public void updateContent(String newContent, UUID requestUserId) { // 입력 검증 로직 필요
+    public void updateContent(String newContent, UUID requestUserId, List<UUID> attachmentIds) { // 입력 검증 로직 필요
         verifySender(requestUserId);
         this.content = newContent;
+        this.attachmentIds = attachmentIds == null ? new ArrayList<>() : new ArrayList<>(attachmentIds);
         touch();
     }
 
