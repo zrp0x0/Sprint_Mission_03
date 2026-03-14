@@ -22,8 +22,7 @@ public record CreatePrivateChannelRequestDTO(
                 ChannelType.PRIVATE, // public / private 구분
                 null,
                 null,
-                this.requestUserId,
-                this.userList
+                this.requestUserId
         );
     }
 }

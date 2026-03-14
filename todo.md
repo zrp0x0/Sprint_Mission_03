@@ -23,6 +23,12 @@
     O- AuthService 고도화
 
     - ChannelService 고도화
+        O- create
+        - find
+        - findAll
+        O- update
+        - delete
+
     - Message Service 고도화
     - ReadStatusService 구현
     - UserStatusService 고도화

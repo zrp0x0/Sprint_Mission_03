@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class FileReadStatusRepository extends FileRepository<ReadStatus> implements ReadStatusRepository {
 
     private final Map<UUID, List<UUID>> userIdIndex = new ConcurrentHashMap<>();
+    private final Map<UUID, List<UUID>> channelIdIndex = new ConcurrentHashMap<>();
 
     protected FileReadStatusRepository(@Value("${app.data.readstatus-path}")String filePath) {
         super(filePath);
@@ -34,10 +35,12 @@ public class FileReadStatusRepository extends FileRepository<ReadStatus> impleme
     @Override
     protected void postDelete(ReadStatus entity) {
         removeFromIndex(userIdIndex, entity.getUserId(), entity.getId());
+        removeFromIndex(channelIdIndex, entity.getChannelId(), entity.getId());
     }
 
     private void addToIndex(ReadStatus rs) {
         userIdIndex.computeIfAbsent(rs.getUserId(), k -> new ArrayList<>()).add(rs.getId());
+        channelIdIndex.computeIfAbsent(rs.getChannelId(), k -> new ArrayList<>()).add(rs.getId());
     }
 
     private void removeFromIndex(Map<UUID, List<UUID>> index, UUID key, UUID value) {
@@ -54,6 +57,20 @@ public class FileReadStatusRepository extends FileRepository<ReadStatus> impleme
         readLock.lock();
         try {
             List<UUID> list = userIdIndex.getOrDefault(userId, Collections.emptyList());
+            return list.stream()
+                    .map(super::findById)
+                    .flatMap(Optional::stream)
+                    .toList();
+        } finally {
+            readLock.unlock();
+        }
+    }
+
+    @Override
+    public List<ReadStatus> findByChannelId(UUID channelId) {
+        readLock.lock();
+        try {
+            List<UUID> list = channelIdIndex.getOrDefault(channelId, Collections.emptyList());
             return list.stream()
                     .map(super::findById)
                     .flatMap(Optional::stream)

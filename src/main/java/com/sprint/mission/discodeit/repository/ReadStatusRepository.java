@@ -8,4 +8,6 @@ import java.util.UUID;
 
 public interface ReadStatusRepository extends Repository<ReadStatus, UUID> {
     List<ReadStatus> findByUserId(UUID userId);
+
+    List<ReadStatus> findByChannelId(UUID channelId);
 }

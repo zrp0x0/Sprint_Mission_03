@@ -4,6 +4,7 @@ import com.sprint.mission.discodeit.dto.channel.*;
 import com.sprint.mission.discodeit.entity.Channel;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface ChannelService {
@@ -38,8 +39,13 @@ public interface ChannelService {
             DeleteChannelRequestDTO dto
     );
 
-    // 채널 전체 조회
-    List<Channel> getAllChannels();
+    // 특정 채널 조회 (find)
+    GetChannelResponseDTO getChannels(
+            UUID channelId
+    );
+
+    // 채널 전체 조회 (findAll)
+    List<GetChannelResponseDTO> findAllByUserId(UUID userId);
 
     // 내 채널 목록 조회
     List<Channel> getUserChannels(UUID userId);
