@@ -15,8 +15,6 @@ public class Message extends BaseEntity {
     private String content;
     private UUID channelId;
     private UUID userId;
-
-    // 추가
     private List<UUID> attachmentIds;
 
     private Message(String content, UUID channelId, UUID userId, List<UUID> attachmentIds) {

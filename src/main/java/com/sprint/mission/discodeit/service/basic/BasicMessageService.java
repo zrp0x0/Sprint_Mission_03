@@ -1,13 +1,13 @@
 package com.sprint.mission.discodeit.service.basic;
 
-import com.sprint.mission.discodeit.dto.message.DeleteMessageRequestDTO;
-import com.sprint.mission.discodeit.dto.message.SendMessageRequestDTO;
-import com.sprint.mission.discodeit.dto.message.UpdateMessageRequestDTO;
+import com.sprint.mission.discodeit.dto.message.*;
+import com.sprint.mission.discodeit.entity.Channel;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.entity.UserChannel;
 import com.sprint.mission.discodeit.exception.BusinessException;
 import com.sprint.mission.discodeit.exception.ErrorCode;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
+import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.MessageRepository;
 import com.sprint.mission.discodeit.repository.UserChannelRepository;
 import com.sprint.mission.discodeit.service.MessageService;
@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,10 +26,11 @@ public class BasicMessageService implements MessageService {
     private final MessageRepository messageRepository;
     private final UserChannelRepository userChannelRepository;
     private final BinaryContentRepository binaryContentRepository;
+    private final ChannelRepository channelRepository;
 
     // create
     @Override
-    public Message sendMessage(
+    public MessageResponseDTO sendMessage(
             SendMessageRequestDTO dto
     ) {
         // 검증 로직
@@ -52,7 +54,14 @@ public class BasicMessageService implements MessageService {
 
         // 실행 로직
         Message newMessage = Message.create(dto.content(), dto.channelId(), dto.userId(), dto.attachmentIds());
-        return messageRepository.save(newMessage);
+        Message savedMessage = messageRepository.save(newMessage);
+
+        // ChannelLastMessage 시간 추가
+        Channel channel = channelRepository.findById(dto.channelId())
+                .orElseThrow(() -> new BusinessException(ErrorCode.CHANNEL_NOT_FOUND));
+        channel.updateRecentMessageTime(savedMessage.getCreateAt());
+
+        return MessageResponseDTO.from(savedMessage);
 
         // 여기서 내가 생각했던 방식이랑 깨진다.
         // - 내가 생각한 건 dto에 있는 걸 곧이 곧대로 믿는 것이 좋을까?
@@ -61,7 +70,7 @@ public class BasicMessageService implements MessageService {
     }
 
     @Override
-    public Message updateMessage(
+    public MessageResponseDTO updateMessage(
             UpdateMessageRequestDTO dto
     ) {
         // 검증 로직
@@ -73,7 +82,7 @@ public class BasicMessageService implements MessageService {
         List<UUID> newAttachmentIds = dto.attachmentIds() == null ? new ArrayList<>() : new ArrayList<>(dto.attachmentIds());
         for (UUID fileId : newAttachmentIds) {
             binaryContentRepository.findById(fileId)
-                    .orElseThrow(() -> new RuntimeException("존재하지 않는 파일 입니다."));
+                    .orElseThrow(() -> new BusinessException(ErrorCode.CONTENT_NOT_EXIST));
         }
 
         // 이전에 있던 첨부 파일 삭제
@@ -85,16 +94,21 @@ public class BasicMessageService implements MessageService {
 
         // 실행 로직
         message.updateContent(dto.content(), dto.requestUserId(), dto.attachmentIds());
-        return messageRepository.save(message);
+        Message savedMessage = messageRepository.save(message);
+        return MessageResponseDTO.from(savedMessage);
     }
 
     @Override
-    public List<Message> getMessagesByChannel(UUID requestUserId, UUID channelId) {
+    public GetAllMessagesResponseDTO getMessagesByChannel(UUID requestUserId, UUID channelId) {
         // 검증 로직
         userJoinThisChannel(requestUserId, channelId);
 
         // 실행 로직
-        return messageRepository.findAllByChannelId(channelId);
+        List<MessageResponseDTO> list = messageRepository.findAllByChannelId(channelId).stream()
+                .map(MessageResponseDTO::from)
+                .toList();
+
+        return GetAllMessagesResponseDTO.from(list);
     }
 
     @Override
@@ -106,6 +120,7 @@ public class BasicMessageService implements MessageService {
         Message message = getMessage(dto.messageId());
         message.verifySender(dto.requestUserId());
 
+        // 없다면 빈 리스트를 들고 있으므로 null 체크 X
         for (UUID fileId : message.getAttachmentIds()) {
             binaryContentRepository.deleteById(fileId);
         }

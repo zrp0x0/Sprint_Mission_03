@@ -257,12 +257,7 @@ public class BasicChannelService implements ChannelService {
     // - 마지막 메세지를 찾는데 시간이 너무 오래 걸림 - 단건 채널 조회는 딱히 상관 없을지 몰라도 다건 조회에서 문제 발생할 것 같음 (10 -> 100000)
     // - 따로 표시해두는게 좋을 듯 - 추후 적용
     private ChannelResponseDTO makeChannelResponseDTO(Channel channel) {
-        // 해당 채널을 기반으로 GetChannel
-        List<Message> messageList = messageRepository.findAllByChannelId(channel.getId());
-        Instant recentMessageTime = messageList.stream()
-                .map(Message::getCreateAt)
-                .max(Instant::compareTo)
-                .orElse(null);
+        Instant recentMessageTime = channel.getRecentMessageTime();
 
         // PRIVATE인 경우 참여자 ID 목록 추출
         List<UUID> participantIds = new ArrayList<>();
