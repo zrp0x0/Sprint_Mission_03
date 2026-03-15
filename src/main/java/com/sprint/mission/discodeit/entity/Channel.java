@@ -1,6 +1,8 @@
 package com.sprint.mission.discodeit.entity;
 
 import com.sprint.mission.discodeit.entity.base.BaseEntity;
+import com.sprint.mission.discodeit.exception.BusinessException;
+import com.sprint.mission.discodeit.exception.ErrorCode;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -50,7 +52,7 @@ public class Channel extends BaseEntity {
 
     public void verifyChannelUpdate(UUID requestUserId) {
         if (!this.masterUserId.equals(requestUserId)) {
-            throw new RuntimeException("이 권한은 방장한테만 있습니다.");
+            throw new BusinessException(ErrorCode.UNAUTHORIZED_ACCESS);
         }
     }
 

@@ -16,7 +16,5 @@ public interface UserService {
     // - 현재는 프로필만 수정하도록 되어있음
     UpdateUserInfoResponseDTO updateUserInfo(UpdateUserInfoRequestDTO dto);
 
-    void deleteUser(
-            UUID userId
-    );
+    void deleteUser(UUID userId);
 }

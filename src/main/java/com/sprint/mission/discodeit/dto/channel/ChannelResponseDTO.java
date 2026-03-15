@@ -7,7 +7,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
-public record GetChannelResponseDTO(
+public record ChannelResponseDTO(
     UUID channelId,
     ChannelType type,
     String name,
@@ -15,12 +15,12 @@ public record GetChannelResponseDTO(
     Instant recentMessageTime,
     List<UUID> participantIds
 ) {
-    public static GetChannelResponseDTO create(
+    public static ChannelResponseDTO from(
             Channel channel,
             Instant recentMessageTime,
             List<UUID> participantIds
     ) {
-        return new GetChannelResponseDTO(
+        return new ChannelResponseDTO(
                 channel.getId(),
                 channel.getType(),
                 channel.getName(),

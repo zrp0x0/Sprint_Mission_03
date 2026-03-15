@@ -20,13 +20,4 @@ public record CreatePublicChannelRequestDTO(
         @Size(max = 255, message = "채널 설명은 255자를 초과할 수 없습니다.")
         String description
 ) {
-    public Channel toChannel() {
-        return Channel.create(
-                ChannelType.PUBLIC, // public / private 구분
-                this.name,
-                this.description,
-                this.requestUserId,
-                null
-        );
-    }
 }

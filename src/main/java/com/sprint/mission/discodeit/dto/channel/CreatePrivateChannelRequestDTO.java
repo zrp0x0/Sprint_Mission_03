@@ -17,12 +17,4 @@ public record CreatePrivateChannelRequestDTO(
         @NotNull
         Set<UUID> userList
 ) {
-    public Channel toChannel() {
-        return Channel.create(
-                ChannelType.PRIVATE, // public / private 구분
-                null,
-                null,
-                this.requestUserId
-        );
-    }
 }

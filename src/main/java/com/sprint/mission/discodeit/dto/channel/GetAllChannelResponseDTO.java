@@ -1,12 +1,10 @@
 package com.sprint.mission.discodeit.dto.channel;
 
-import java.util.UUID;
-
 public record GetAllChannelResponseDTO(
-    GetChannelResponseDTO channelResponseDTO
+    ChannelResponseDTO channelResponseDTO
 ) {
     public static GetAllChannelResponseDTO create(
-            GetChannelResponseDTO channelRespoonseDTO
+            ChannelResponseDTO channelRespoonseDTO
     ) {
         return new GetAllChannelResponseDTO(
             channelRespoonseDTO
