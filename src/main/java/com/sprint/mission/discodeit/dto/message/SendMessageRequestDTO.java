@@ -21,12 +21,4 @@ public record SendMessageRequestDTO(
 
         List<UUID> attachmentIds
 ) {
-    public Message toMessage() {
-        return Message.create(
-                this.content,
-                this.channelId,
-                this.userId,
-                attachmentIds
-        );
-    }
 }

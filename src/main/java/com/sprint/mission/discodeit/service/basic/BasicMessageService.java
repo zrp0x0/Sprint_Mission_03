@@ -5,6 +5,8 @@ import com.sprint.mission.discodeit.dto.message.SendMessageRequestDTO;
 import com.sprint.mission.discodeit.dto.message.UpdateMessageRequestDTO;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.entity.UserChannel;
+import com.sprint.mission.discodeit.exception.BusinessException;
+import com.sprint.mission.discodeit.exception.ErrorCode;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
 import com.sprint.mission.discodeit.repository.MessageRepository;
 import com.sprint.mission.discodeit.repository.UserChannelRepository;
@@ -39,7 +41,7 @@ public class BasicMessageService implements MessageService {
         if (dto.attachmentIds() != null && !dto.attachmentIds().isEmpty()) {
             for (UUID fileId : dto.attachmentIds()) {
                 binaryContentRepository.findById(fileId)
-                        .orElseThrow(() -> new RuntimeException("존재하지 않는 파일 입니다."));
+                        .orElseThrow(() -> new BusinessException(ErrorCode.CONTENT_NOT_EXIST)); // 고민 중
             }
         }
 
@@ -49,8 +51,13 @@ public class BasicMessageService implements MessageService {
         // - dto로 생성이 아니라 내부 메소드 자체로 생성하도록 (Message.create())를 사용하는 패턴이 더 나으려나? 질문
 
         // 실행 로직
-        Message newMessage = dto.toMessage();
+        Message newMessage = Message.create(dto.content(), dto.channelId(), dto.userId(), dto.attachmentIds());
         return messageRepository.save(newMessage);
+
+        // 여기서 내가 생각했던 방식이랑 깨진다.
+        // - 내가 생각한 건 dto에 있는 걸 곧이 곧대로 믿는 것이 좋을까?
+        // - 근데 또 생각해보니깐 그렇네, dto로 뽑은 걸 사용하는게 더 안 좋을 것 같기도?
+        // - dto는 불변이 보장된다면 dto로 입력 받는 것이 더 좋은 것 같음
     }
 
     @Override
@@ -81,7 +88,16 @@ public class BasicMessageService implements MessageService {
         return messageRepository.save(message);
     }
 
+    @Override
+    public List<Message> getMessagesByChannel(UUID requestUserId, UUID channelId) {
+        // 검증 로직
+        userJoinThisChannel(requestUserId, channelId);
 
+        // 실행 로직
+        return messageRepository.findAllByChannelId(channelId);
+    }
+
+    @Override
     public void deleteMessage(
             DeleteMessageRequestDTO dto
     ) {
@@ -96,15 +112,6 @@ public class BasicMessageService implements MessageService {
 
         // 실행 로직
         messageRepository.deleteById(message.getId());
-    }
-
-    @Override
-    public List<Message> getMessagesByChannel(UUID requestUserId, UUID channelId) {
-        // 검증 로직
-        userJoinThisChannel(requestUserId, channelId);
-
-        // 실행 로직
-        return messageRepository.findAllByChannelId(channelId);
     }
 
     private UserChannel userJoinThisChannel(UUID userId, UUID channelId) {
