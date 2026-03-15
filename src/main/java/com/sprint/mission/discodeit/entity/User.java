@@ -1,6 +1,8 @@
 package com.sprint.mission.discodeit.entity;
 
 import com.sprint.mission.discodeit.entity.base.BaseEntity;
+import com.sprint.mission.discodeit.exception.BusinessException;
+import com.sprint.mission.discodeit.exception.ErrorCode;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -43,7 +45,7 @@ public class User extends BaseEntity {
     // 이하 로직
     public void authenticate(String rawPassword) {
         if (!password.equals(rawPassword)) {
-            throw new RuntimeException("인증 정보가 일치하지 않습니다.");
+            throw new BusinessException(ErrorCode.INVALID_CREDENTIALS);
         }
     }
 

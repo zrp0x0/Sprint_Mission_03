@@ -33,3 +33,10 @@
     - ReadStatusService 구현
     - UserStatusService 고도화
     - BinaryContentService 구현
+
+
+// Question
+// 궁금했던 점
+// - findByEmail(dto.username())이 더 나은 것일까?
+// - 현재 아래와 같이 작성한 이유는 targetEmail에 대해서 어떤 작업이 추가적으로 일어날 수도 있다는 가정하에 (toLower 같은)
+// - 코드 수정을 더 용이하게 할 수 있을 것 같아서 분리해서 작성
