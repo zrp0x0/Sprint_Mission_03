@@ -40,8 +40,8 @@ public class Channel extends BaseEntity {
         return new Channel(type, name, description, masterUserId);
     }
 
+    // 이하 로직
     public void updateInfo(String name, String description, UUID requestUserId) {
-        // 채널 수정 자격 검증
         verifyChannelUpdate(requestUserId);
         this.name = name;
         this.description = description;

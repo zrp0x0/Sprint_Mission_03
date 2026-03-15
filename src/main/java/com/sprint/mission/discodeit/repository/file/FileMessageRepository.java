@@ -27,8 +27,12 @@ public class FileMessageRepository extends FileRepository<Message> implements Me
     }
 
     @Override
-    protected void postSave(Message entity) {
-        addToIndex(entity);
+    protected void postSave(Message newEntity, Message oldEntity) {
+        if (oldEntity != null) {
+            postDelete(oldEntity);
+        }
+
+        addToIndex(newEntity);
     }
 
     @Override
@@ -51,6 +55,7 @@ public class FileMessageRepository extends FileRepository<Message> implements Me
         }
     }
 
+    // + 시간순
     @Override
     public List<Message> findAllByUserId(UUID userId) {
         readLock.lock();
@@ -66,7 +71,6 @@ public class FileMessageRepository extends FileRepository<Message> implements Me
         }
     }
 
-    // + 시간순
     @Override
     public List<Message> findAllByChannelId(UUID channelId) {
         readLock.lock();

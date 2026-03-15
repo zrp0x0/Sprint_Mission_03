@@ -1,22 +1,21 @@
 package com.sprint.mission.discodeit.repository.file;
 
-import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.entity.UserStatus;
 import com.sprint.mission.discodeit.repository.UserStatusRepository;
 import com.sprint.mission.discodeit.repository.base.FileRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
 public class FileUserStatusRepository extends FileRepository<UserStatus> implements UserStatusRepository {
 
     // userid : userstatusid
-    private final Map<UUID, UUID> userIdIndex = new ConcurrentHashMap<>();
+    private final Map<UUID, UUID> userIdIndex = new HashMap<>();
 
     protected FileUserStatusRepository(@Value("${app.data.userstatus-path}") String filePath) {
         super(filePath);
@@ -31,8 +30,12 @@ public class FileUserStatusRepository extends FileRepository<UserStatus> impleme
     }
 
     @Override
-    protected void postSave(UserStatus entity) {
-        userIdIndex.put(entity.getUserId(), entity.getId());
+    protected void postSave(UserStatus newEntity, UserStatus oldEntity) {
+        if (oldEntity != null) {
+            postDelete(oldEntity);
+        }
+
+        userIdIndex.put(newEntity.getUserId(), newEntity.getId());
     }
 
     @Override

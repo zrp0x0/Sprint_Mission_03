@@ -4,7 +4,7 @@ import lombok.Getter;
 
 import java.time.Instant;
 
-@Getter // equals and hash도 해야될 듯? - 공부하고 하자
+@Getter
 public abstract class BaseEntity extends ImmutableBaseEntity {
 
     protected Instant updateAt;

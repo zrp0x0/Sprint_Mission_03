@@ -17,7 +17,7 @@ public class Message extends BaseEntity {
     private UUID userId;
 
     // 추가
-    private List<UUID> attachmentIds; // 깊은 복사
+    private List<UUID> attachmentIds;
 
     private Message(String content, UUID channelId, UUID userId, List<UUID> attachmentIds) {
         super();
@@ -40,11 +40,12 @@ public class Message extends BaseEntity {
         return new Message(this);
     }
 
-    public static Message create(String content, UUID channelId, UUID userId, List<UUID> attachmentIds) { // 입력 검증 로직 필요
+    public static Message create(String content, UUID channelId, UUID userId, List<UUID> attachmentIds) {
         return new Message(content, channelId, userId, attachmentIds);
     }
 
-    public void updateContent(String newContent, UUID requestUserId, List<UUID> attachmentIds) { // 입력 검증 로직 필요
+    // 이하 로직
+    public void updateContent(String newContent, UUID requestUserId, List<UUID> attachmentIds) {
         verifySender(requestUserId);
         this.content = newContent;
         this.attachmentIds = attachmentIds == null ? new ArrayList<>() : new ArrayList<>(attachmentIds);

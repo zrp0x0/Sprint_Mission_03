@@ -7,13 +7,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
 public class FileReadStatusRepository extends FileRepository<ReadStatus> implements ReadStatusRepository {
 
-    private final Map<UUID, List<UUID>> userIdIndex = new ConcurrentHashMap<>();
-    private final Map<UUID, List<UUID>> channelIdIndex = new ConcurrentHashMap<>();
+    private final Map<UUID, List<UUID>> userIdIndex = new HashMap<>();
+    private final Map<UUID, List<UUID>> channelIdIndex = new HashMap<>();
 
     protected FileReadStatusRepository(@Value("${app.data.readstatus-path}")String filePath) {
         super(filePath);
@@ -28,8 +27,12 @@ public class FileReadStatusRepository extends FileRepository<ReadStatus> impleme
     }
 
     @Override
-    protected void postSave(ReadStatus entity) {
-        addToIndex(entity);
+    protected void postSave(ReadStatus newEntity, ReadStatus oldEntity) {
+        if (oldEntity != null) {
+            postDelete(oldEntity);
+        }
+
+        addToIndex(newEntity);
     }
 
     @Override

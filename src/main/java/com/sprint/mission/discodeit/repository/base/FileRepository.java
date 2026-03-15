@@ -1,9 +1,8 @@
 package com.sprint.mission.discodeit.repository.base;
 
-import com.sprint.mission.discodeit.entity.ReadStatus;
-import com.sprint.mission.discodeit.entity.User;
-import com.sprint.mission.discodeit.entity.base.BaseEntity;
 import com.sprint.mission.discodeit.entity.base.ImmutableBaseEntity;
+import com.sprint.mission.discodeit.exception.BusinessException;
+import com.sprint.mission.discodeit.exception.ErrorCode;
 
 import java.io.*;
 import java.util.*;
@@ -11,10 +10,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-
-/*
-예외 처리 로직 아직 안함
- */
 public abstract class FileRepository<T extends ImmutableBaseEntity> {
 
     // 이 부분이 좀...? ReentrantReadWriteLock 공부
@@ -25,7 +20,7 @@ public abstract class FileRepository<T extends ImmutableBaseEntity> {
 
     protected final String filePath;
 
-    protected final Map<UUID, T> dataMap = new ConcurrentHashMap<>();
+    protected final Map<UUID, T> dataMap = new HashMap<>();
     // Q: 락을 걸어주면 HashMap을 사용해도 Thread-Safe 한 것 아닌가?
 
     protected FileRepository(String filePath) {
@@ -35,7 +30,7 @@ public abstract class FileRepository<T extends ImmutableBaseEntity> {
 
     // Hook 메서드: 인덱스 저장 용도
     protected abstract void postLoad();
-    protected void postSave(T entity) {}
+    protected void postSave(T newEntity, T oldEntity) {}
     protected void postDelete(T entity) {}
 
     private void load() {
@@ -56,8 +51,10 @@ public abstract class FileRepository<T extends ImmutableBaseEntity> {
                 this.dataMap.clear();
                 this.dataMap.putAll((Map<UUID, T>)object);
             }
-        } catch (Exception e) {
-
+        } catch (ClassNotFoundException | ClassCastException e) {
+            throw new BusinessException(ErrorCode.FILE_DATA_CORRUPTED);
+        } catch (IOException e) {
+            throw new BusinessException(ErrorCode.FILE_IO_ERROR);
         }
     }
 
@@ -75,8 +72,8 @@ public abstract class FileRepository<T extends ImmutableBaseEntity> {
                 ObjectOutputStream oos = new ObjectOutputStream(bos)
         ) {
             oos.writeObject(dataMap);
-        } catch (Exception e) {
-
+        } catch (IOException e) {
+            throw new BusinessException(ErrorCode.FILE_IO_ERROR);
         }
     }
 
@@ -85,9 +82,13 @@ public abstract class FileRepository<T extends ImmutableBaseEntity> {
         writeLock.lock();
         try {
             T copyEntity = (T) entity.copy(); // 원본 객체 훼손 위험성이 존재함!!
+
+            T oldEntity = dataMap.get(copyEntity.getId());
+
             dataMap.put(copyEntity.getId(), copyEntity);
             saveToFile();
-            postSave(copyEntity);
+
+            postSave(copyEntity, oldEntity); // 인덱스 갱신
             return copyEntity;
         } finally {
             writeLock.unlock();
@@ -107,7 +108,7 @@ public abstract class FileRepository<T extends ImmutableBaseEntity> {
 
     @SuppressWarnings("unchecked")
     public List<T> findAll() {
-        readLock.lock(); // 근데 읽기 작업인데
+        readLock.lock();
         try {
             List<T> list = new ArrayList<>();
             for (T entity : dataMap.values()) {
@@ -126,7 +127,7 @@ public abstract class FileRepository<T extends ImmutableBaseEntity> {
             T removed = dataMap.remove(id);
             if (removed != null) {
                 saveToFile();
-                postDelete(removed);
+                postDelete(removed); // 인덱스 갱신
             }
         } finally {
             writeLock.unlock();

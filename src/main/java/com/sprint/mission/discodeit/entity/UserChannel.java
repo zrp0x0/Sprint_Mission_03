@@ -8,7 +8,7 @@ import java.util.UUID;
 
 @Getter
 @ToString(callSuper = true)
-public class UserChannel extends BaseEntity { // 유저의 등록일 또는 나중에 id로 접근해야될 일 있을 경우를 대비
+public class UserChannel extends BaseEntity {
 
     private UUID userId;
     private UUID channelId;

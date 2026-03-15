@@ -7,15 +7,13 @@ import lombok.ToString;
 import java.util.UUID;
 
 @Getter
-@ToString(callSuper = true) // 부모 필드도 toString에 포함
+@ToString(callSuper = true)
 public class User extends BaseEntity {
 
     private String username;
     private String email;
     private String password;
-
-    // 추가
-    private UUID profileId; // 프로필 이미지
+    private UUID profileId;
 
     private User(String username, String email, String password, UUID profileId) {
         super();
@@ -39,11 +37,10 @@ public class User extends BaseEntity {
     }
 
     public static User create(String username, String email, String password, UUID profileId) {
-        // 검증 로직 여기서
         return new User(username, email, password, profileId);
     }
 
-    //
+    // 이하 로직
     public void authenticate(String rawPassword) {
         if (!password.equals(rawPassword)) {
             throw new RuntimeException("인증 정보가 일치하지 않습니다.");

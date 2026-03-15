@@ -22,17 +22,18 @@ public class FileUserChannelRepository extends FileRepository<UserChannel> imple
 
     @Override
     protected void postLoad() {
-//        userToChannelsIndex.clear();
-//        channelToUsersIndex.clear();
-        // 클리어를 꼭 해야하는 걸까? 생성 시점에 딱 한 번 불리는데?
         for (UserChannel uc : dataMap.values()) {
             addToIndex(uc);
         }
     }
 
     @Override
-    protected void postSave(UserChannel entity) {
-        addToIndex(entity);
+    protected void postSave(UserChannel newEntity, UserChannel oldEntity) {
+        if (oldEntity != null) {
+            postDelete(oldEntity);
+        }
+
+        addToIndex(newEntity);
     }
 
     @Override
