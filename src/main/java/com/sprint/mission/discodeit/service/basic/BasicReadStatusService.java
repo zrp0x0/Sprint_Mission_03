@@ -22,6 +22,7 @@ public class BasicReadStatusService implements ReadStatusService {
     private final UserRepository userRepository;
     private final ReadStatusRepository readStatusRepository;
 
+    @Override
     public ReadStatus create(
             CreateReadStatusRequestDTO dto
     ) {
@@ -44,13 +45,15 @@ public class BasicReadStatusService implements ReadStatusService {
         return readStatusRepository.save(newReadStatus);
     }
 
+    @Override
     public ReadStatus find(
-        UUID readStatusId
+            UUID readStatusId
     ) {
         return readStatusRepository.findById(readStatusId)
                 .orElseThrow(() -> new RuntimeException("해당 ReadStatus는 없습니다."));
     }
 
+    @Override
     public List<ReadStatus> findAllByUserId(
             UUID userId
     ) {
@@ -61,6 +64,7 @@ public class BasicReadStatusService implements ReadStatusService {
         return readStatusRepository.findByUserId(userId);
     }
 
+    @Override
     public ReadStatus update(
             UUID readStatusId
     ) {
@@ -71,6 +75,7 @@ public class BasicReadStatusService implements ReadStatusService {
         return readStatusRepository.save(readStatus);
     }
 
+    @Override
     public void delete(
             UUID readStatusId
     ) {
