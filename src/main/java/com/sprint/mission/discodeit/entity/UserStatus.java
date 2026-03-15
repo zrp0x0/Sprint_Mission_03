@@ -36,7 +36,7 @@ public class UserStatus extends BaseEntity {
     }
 
     public static UserStatus create(UUID userId) {
-        return new UserStatus(userId, Instant.now(), UserStatusType.ONLINE);
+        return new UserStatus(userId, Instant.now(), UserStatusType.OFFLINE);
     }
 
     // 이하 로직

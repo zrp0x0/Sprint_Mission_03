@@ -49,8 +49,9 @@ public class User extends BaseEntity {
         }
     }
 
-    public void updateProfileId(UUID updateProfileId) {
-        this.profileId = updateProfileId;
+    public void updateUserInfo(String username, String email, String password, UUID profileId) {
+
         touch();
     }
+
 }

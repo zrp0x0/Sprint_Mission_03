@@ -1,5 +1,6 @@
 package com.sprint.mission.discodeit.dto.user;
 
+import com.sprint.mission.discodeit.dto.binarycontent.CreateBinaryContentRequestDTO;
 import com.sprint.mission.discodeit.entity.User;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -22,24 +23,7 @@ public record SignUpRequestDTO(
         @Size(min = 8, message = "비밀번호는 최소 8자 이상이어야 합니다.")
         String password,
 
-//        String fileName,
-//        String contentType,
-//        byte[] data
-
-        ProfileImageDTO profileImage
+        UUID profileId
 ) {
-    public record ProfileImageDTO(
-            String fileName,
-            String contentType,
-            byte[] data
-    ) {}
 
-    public User toUser(UUID profileId) {
-        return User.create(
-                this.username,
-                this.email,
-                this.password,
-                profileId
-        );
-    }
 }
